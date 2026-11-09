@@ -1,0 +1,1326 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTest Pro - B.Tech Test Series, Store & Analytics Platform</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- KaTeX for LaTeX Math Equation Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Question Palette Status Colors */
+        .status-not-visited { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .status-not-answered { background-color: #ef4444; color: white; }
+        .status-answered { background-color: #22c55e; color: white; }
+        .status-marked { background-color: #a855f7; color: white; }
+        .status-ans-marked { background-color: #a855f7; color: white; position: relative; }
+        .status-ans-marked::after {
+            content: ''; position: absolute; bottom: 2px; right: 2px;
+            width: 7px; height: 7px; background-color: #22c55e;
+            border-radius: 50%; border: 1px solid white;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- App Container -->
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Dynamic Header -->
+        <header id="main-header" class="bg-white border-b border-slate-200 sticky top-0 z-30 transition-all shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
+                        <div class="bg-gradient-to-tr from-brand-600 to-indigo-600 text-white p-2.5 rounded-xl shadow-md">
+                            <i class="fa-solid fa-graduation-cap text-xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-brand-700 to-indigo-700 bg-clip-text text-transparent">EduTest Pro</span>
+                            <span class="block text-xs text-slate-500 font-medium">B.Tech GATE & Exam Series Engine</span>
+                        </div>
+                    </div>
+
+                    <!-- Top Navigation Links -->
+                    <nav id="nav-links" class="hidden md:flex items-center space-x-1">
+                        <button onclick="navigateTo('home')" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition">
+                            <i class="fa-solid fa-store mr-1.5"></i> Test Store & Catalog
+                        </button>
+                        <button onclick="navigateTo('dashboard')" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition">
+                            <i class="fa-solid fa-chart-line mr-1.5"></i> Performance Dashboard
+                        </button>
+                        <button id="admin-nav-btn" onclick="navigateTo('admin')" class="nav-btn hidden px-4 py-2 rounded-lg text-sm font-semibold text-purple-700 hover:bg-purple-50 transition">
+                            <i class="fa-solid fa-sliders mr-1.5"></i> Admin Studio
+                        </button>
+                    </nav>
+
+                    <!-- Auth Profile / Login Button Container -->
+                    <div id="auth-header-container" class="flex items-center space-x-3">
+                        <!-- Rendered dynamically by JS -->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEW CONTAINER -->
+        <main class="flex-grow">
+            <!-- 1. CATALOG / STORE VIEW -->
+            <section id="view-home" class="view-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Hero Banner -->
+                <div class="bg-gradient-to-r from-slate-900 via-brand-950 to-indigo-950 rounded-2xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden mb-10 border border-slate-800">
+                    <div class="relative z-10 max-w-2xl">
+                        <span class="inline-block bg-brand-500/30 text-brand-200 text-xs font-bold px-3 py-1 rounded-full border border-brand-400/30 mb-3">
+                            🎯 Comprehensive Engineering Test Platform
+                        </span>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">
+                            Crack GATE & B.Tech Semester Exams
+                        </h1>
+                        <p class="text-slate-300 text-sm sm:text-base mb-6">
+                            Unlock high-yield mock series with NTA/GATE exam interface simulation, detailed solutions, and instantaneous All-India ranks.
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="filterBranch('ALL')" class="bg-brand-600 hover:bg-brand-500 text-white font-bold px-5 py-2.5 rounded-lg text-sm shadow transition">
+                                Browse All Series
+                            </button>
+                            <button onclick="openAuthModal('register')" class="bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-2.5 rounded-lg text-sm border border-white/20 transition">
+                                Create Free Student Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branch & Category Filters -->
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Explore Test Series Packs</h2>
+                        <p class="text-xs text-slate-500">Buy once, get lifetime access to all included subject tests.</p>
+                    </div>
+                    <div class="flex space-x-2 overflow-x-auto pb-2 custom-scrollbar">
+                        <button onclick="filterBranch('ALL')" class="branch-tag bg-brand-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-sm transition">All Branches</button>
+                        <button onclick="filterBranch('CSE')" class="branch-tag bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-semibold transition">Computer Science (CSE)</button>
+                        <button onclick="filterBranch('ECE')" class="branch-tag bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-semibold transition">Electronics (ECE)</button>
+                        <button onclick="filterBranch('ME')" class="branch-tag bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-semibold transition">Mechanical (ME)</button>
+                        <button onclick="filterBranch('EE')" class="branch-tag bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-semibold transition">Electrical (EE)</button>
+                    </div>
+                </div>
+
+                <!-- Test Cards Grid -->
+                <div id="test-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Test Cards Injected Here -->
+                </div>
+            </section>
+
+            <!-- 2. LIVE EXAM INTERFACE (NTA/GATE STYLE) -->
+            <section id="view-exam" class="view-section hidden fixed inset-0 z-50 bg-slate-100 flex flex-col">
+                <!-- Exam Top Navigation -->
+                <header class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center shadow-md select-none">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-brand-600 text-white text-xs font-bold px-2.5 py-1 rounded">GATE MOCK</span>
+                        <h2 id="exam-title" class="text-base font-bold truncate max-w-xs sm:max-w-md">B.Tech Full Mock Test</h2>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- Countdown Timer -->
+                        <div class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-1.5 flex items-center space-x-2">
+                            <i class="fa-regular fa-clock text-yellow-400 animate-pulse"></i>
+                            <span class="text-xs text-slate-400">Time Left:</span>
+                            <span id="exam-timer" class="font-mono text-base font-bold text-yellow-400">00:00:00</span>
+                        </div>
+                        <button onclick="confirmSubmitTest()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-1.5 rounded text-sm transition">
+                            Submit Exam
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Exam Body: Split View -->
+                <div class="flex-grow flex overflow-hidden">
+                    <!-- Left Column: Question Screen -->
+                    <div class="flex-1 flex flex-col bg-white overflow-y-auto custom-scrollbar border-r border-slate-200">
+                        <div class="bg-slate-50 border-b border-slate-200 px-6 py-3 flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Question No.</span>
+                                <span id="exam-q-num" class="bg-brand-100 text-brand-800 font-extrabold text-sm px-2.5 py-0.5 rounded-full">1</span>
+                                <span id="exam-q-subject" class="bg-slate-200 text-slate-700 text-xs font-bold px-2 py-0.5 rounded">Subject</span>
+                            </div>
+                            <div class="text-xs text-slate-600 space-x-3">
+                                <span>Marks for Correct: <strong class="text-green-600" id="exam-q-marks">+2.00</strong></span>
+                                <span>Negative: <strong class="text-red-500" id="exam-q-negative">-0.66</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Question Content & Options Container -->
+                        <div class="p-6 flex-grow overflow-y-auto">
+                            <div id="exam-q-text" class="text-base font-medium text-slate-800 mb-6 leading-relaxed">
+                                <!-- Question Statement Rendered Here -->
+                            </div>
+
+                            <div id="exam-options-container" class="space-y-3">
+                                <!-- Options dynamically rendered -->
+                            </div>
+                        </div>
+
+                        <!-- Bottom Control Action Bar -->
+                        <div class="bg-slate-50 border-t border-slate-200 p-4 flex flex-wrap justify-between items-center gap-3 select-none">
+                            <div class="flex space-x-2">
+                                <button onclick="markForReview()" class="bg-purple-100 text-purple-700 hover:bg-purple-200 font-bold px-4 py-2 rounded text-xs sm:text-sm border border-purple-300 transition">
+                                    <i class="fa-solid fa-bookmark mr-1"></i> Mark for Review & Next
+                                </button>
+                                <button onclick="clearResponse()" class="bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold px-4 py-2 rounded text-xs sm:text-sm transition">
+                                    Clear Response
+                                </button>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="navigateQuestion(-1)" class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold px-4 py-2 rounded text-xs sm:text-sm transition">
+                                    <i class="fa-solid fa-chevron-left mr-1"></i> Previous
+                                </button>
+                                <button onclick="saveAndNext()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-5 py-2 rounded text-xs sm:text-sm shadow transition">
+                                    Save & Next <i class="fa-solid fa-chevron-right ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Question Palette Sidebar -->
+                    <div class="w-80 bg-slate-50 border-l border-slate-200 flex flex-col hidden lg:flex select-none">
+                        <div class="p-4 bg-white border-b border-slate-200 flex items-center space-x-3">
+                            <div id="exam-user-avatar" class="h-10 w-10 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center">
+                                RS
+                            </div>
+                            <div>
+                                <div id="exam-user-name" class="text-sm font-bold text-slate-800">Student</div>
+                                <div class="text-xs text-slate-500">Live Exam Session</div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-100 border-b border-slate-200 grid grid-cols-2 gap-2 text-xs">
+                            <div class="flex items-center space-x-2">
+                                <span class="h-6 w-6 rounded flex items-center justify-center status-answered text-xs font-bold">0</span>
+                                <span class="text-slate-600">Answered</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="h-6 w-6 rounded flex items-center justify-center status-not-answered text-xs font-bold">0</span>
+                                <span class="text-slate-600">Not Answered</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="h-6 w-6 rounded flex items-center justify-center status-not-visited text-xs font-bold">0</span>
+                                <span class="text-slate-600">Not Visited</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="h-6 w-6 rounded flex items-center justify-center status-marked text-xs font-bold">0</span>
+                                <span class="text-slate-600">Marked Review</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow p-4 overflow-y-auto custom-scrollbar">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Question Palette</h3>
+                            <div id="question-palette-grid" class="grid grid-cols-5 gap-2">
+                                <!-- Palette Buttons dynamic -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. DETAILED PERFORMANCE ANALYTICS DASHBOARD -->
+            <section id="view-dashboard" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-slate-200">
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-slate-900">Performance & Analytics Center</h1>
+                        <p class="text-sm text-slate-500">Detailed breakdown of your score, accuracy, and solution steps.</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex space-x-3">
+                        <button onclick="navigateTo('home')" class="bg-white border border-slate-300 text-slate-700 font-semibold px-4 py-2 rounded-lg text-sm hover:bg-slate-50 transition">
+                            Take Another Test
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards Row -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="text-xs font-bold text-slate-400 uppercase">Total Score</div>
+                        <div class="text-2xl font-extrabold text-brand-600 mt-1" id="dash-score">0 / 0</div>
+                        <div class="text-xs text-green-600 font-semibold mt-1"><i class="fa-solid fa-arrow-trend-up"></i> Evaluated</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="text-xs font-bold text-slate-400 uppercase">Percentile</div>
+                        <div class="text-2xl font-extrabold text-indigo-600 mt-1" id="dash-percentile">0 %</div>
+                        <div class="text-xs text-slate-500 mt-1">Est. AIR Rank: <strong id="dash-rank">#--</strong></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="text-xs font-bold text-slate-400 uppercase">Accuracy Rate</div>
+                        <div class="text-2xl font-extrabold text-emerald-600 mt-1" id="dash-accuracy">0 %</div>
+                        <div class="text-xs text-slate-500 mt-1"><span id="dash-correct-count">0</span> Correct • <span id="dash-incorrect-count">0</span> Incorrect</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="text-xs font-bold text-slate-400 uppercase">Attempt Status</div>
+                        <div class="text-2xl font-extrabold text-amber-600 mt-1" id="dash-attempt-rate">0 / 0</div>
+                        <div class="text-xs text-slate-500 mt-1">Questions Attempted</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-900 mb-4">Subject Wise Accuracy %</h3>
+                        <div class="h-64 relative">
+                            <canvas id="chart-subject-accuracy"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-900 mb-4">Attempt Breakdown</h3>
+                        <div class="h-64 relative flex justify-center">
+                            <canvas id="chart-attempt-summary"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Question Review & Solutions Module -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+                    <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Question Solutions & Keys</h3>
+                            <p class="text-xs text-slate-500">Review your responses against detailed step-by-step logic.</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="filterReview('ALL')" class="review-filter-btn px-3 py-1 rounded text-xs font-semibold bg-brand-600 text-white">All</button>
+                            <button onclick="filterReview('CORRECT')" class="review-filter-btn px-3 py-1 rounded text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Correct</button>
+                            <button onclick="filterReview('INCORRECT')" class="review-filter-btn px-3 py-1 rounded text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Incorrect</button>
+                        </div>
+                    </div>
+                    <div id="solutions-list" class="divide-y divide-slate-200">
+                        <!-- Dynamic Solution Items -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. ADMIN TEST CREATOR STUDIO -->
+            <section id="view-admin" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="flex justify-between items-center mb-8 pb-4 border-b border-slate-200">
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-slate-900">Admin Question & Test Studio</h1>
+                        <p class="text-sm text-slate-500">Create test packages, assign prices or free access, and add questions with math support.</p>
+                    </div>
+                    <span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1.5 rounded-full border border-purple-300">
+                        <i class="fa-solid fa-user-shield mr-1"></i> Admin Privileges Active
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Create Test Form -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-fit">
+                        <h3 class="text-base font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">1. Create New Test Series</h3>
+                        <form id="form-create-test" onsubmit="handleCreateTest(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Test Title</label>
+                                <input type="text" id="admin-test-title" required placeholder="e.g. Operating Systems Mock 1" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Branch</label>
+                                    <select id="admin-test-branch" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                                        <option value="CSE">CSE</option>
+                                        <option value="ECE">ECE</option>
+                                        <option value="ME">ME</option>
+                                        <option value="EE">EE</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Price (₹)</label>
+                                    <input type="number" id="admin-test-price" required value="499" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="admin-test-is-free" class="rounded text-brand-600 focus:ring-brand-500">
+                                <label for="admin-test-is-free" class="text-xs font-bold text-slate-700">Mark First Test as Free Demo</label>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Duration (Minutes)</label>
+                                <input type="number" id="admin-test-duration" required value="30" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Description</label>
+                                <textarea id="admin-test-desc" rows="2" placeholder="Syllabus overview..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition">
+                                Publish Test Series Pack
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Add Questions -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">2. Add Questions to Test</h3>
+                        <form id="form-add-question" onsubmit="handleAddQuestion(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Target Test Series</label>
+                                <select id="admin-target-test-id" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                                    <!-- Options dynamic -->
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Subject</label>
+                                    <input type="text" id="admin-q-subject" placeholder="Subject Name" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Marks (+)</label>
+                                    <input type="number" step="0.5" id="admin-q-marks" value="2.0" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Negative (-)</label>
+                                    <input type="number" step="0.01" id="admin-q-negative" value="0.66" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Question Statement (Supports KaTeX e.g. \( O(n \log n) \))</label>
+                                <textarea id="admin-q-text" rows="3" required placeholder="Type question text..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none"></textarea>
+                            </div>
+
+                            <div class="space-y-2 border p-3 rounded-lg bg-slate-50">
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Options & Correct Choice</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" name="correct-option" value="0" checked>
+                                    <input type="text" id="opt-0" placeholder="Option A" required class="flex-grow px-3 py-1.5 text-sm border border-slate-300 rounded outline-none">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" name="correct-option" value="1">
+                                    <input type="text" id="opt-1" placeholder="Option B" required class="flex-grow px-3 py-1.5 text-sm border border-slate-300 rounded outline-none">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" name="correct-option" value="2">
+                                    <input type="text" id="opt-2" placeholder="Option C" required class="flex-grow px-3 py-1.5 text-sm border border-slate-300 rounded outline-none">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" name="correct-option" value="3">
+                                    <input type="text" id="opt-3" placeholder="Option D" required class="flex-grow px-3 py-1.5 text-sm border border-slate-300 rounded outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Solution Explanation</label>
+                                <textarea id="admin-q-solution" rows="2" placeholder="Step by step solution..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition">
+                                + Add Question to Bank
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- AUTHENTICATION MODAL (LOGIN / REGISTER) -->
+    <div id="auth-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-100">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Auth Tabs -->
+            <div class="flex border-b border-slate-200 mb-6">
+                <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 font-bold text-sm text-brand-600 border-b-2 border-brand-600">Login</button>
+                <button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 font-bold text-sm text-slate-400 hover:text-slate-600">Register Student</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
+                    <input type="email" id="login-email" required value="student@btech.edu" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label>
+                    <input type="password" id="login-password" required value="password123" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 space-y-1">
+                    <p class="font-bold text-slate-700">Quick Demo Accounts:</p>
+                    <p>• Student: <code class="bg-slate-200 px-1 rounded">student@btech.edu</code></p>
+                    <p>• Admin: <code class="bg-slate-200 px-1 rounded">admin@edutest.com</code></p>
+                </div>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-lg text-sm shadow transition">
+                    Sign In & Continue
+                </button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Full Name</label>
+                    <input type="text" id="reg-name" required placeholder="e.g. Rahul Sharma" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email</label>
+                    <input type="email" id="reg-email" required placeholder="rahul@college.edu" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">B.Tech Branch</label>
+                        <select id="reg-branch" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                            <option value="CSE">CSE</option>
+                            <option value="ECE">ECE</option>
+                            <option value="ME">ME</option>
+                            <option value="EE">EE</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Year</label>
+                        <select id="reg-year" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none">
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-sm shadow transition">
+                    Create Account & Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- E-COMMERCE CHECKOUT & PAYMENT MODAL -->
+    <div id="checkout-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-slate-100">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 border-b border-slate-200 pb-4 mb-6">
+                <div class="bg-emerald-100 text-emerald-700 p-3 rounded-xl">
+                    <i class="fa-solid fa-bag-shopping text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Unlock Test Series Pack</h3>
+                    <p class="text-xs text-slate-500">Instant lifetime access & full analytical reports.</p>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 mb-6 text-sm">
+                <div class="flex justify-between text-slate-700">
+                    <span id="checkout-series-title" class="font-bold">GATE CSE Test Series</span>
+                    <span id="checkout-series-original-price" class="font-bold">₹499</span>
+                </div>
+                <div class="flex justify-between text-slate-500 text-xs">
+                    <span>Includes 5+ Subject Mock Tests</span>
+                    <span class="text-emerald-600 font-semibold">Instant Access</span>
+                </div>
+                <!-- Coupon Row -->
+                <div class="pt-2 border-t border-slate-200 flex space-x-2">
+                    <input type="text" id="coupon-code-input" placeholder="Coupon (e.g. GATE2027)" class="uppercase px-3 py-1.5 text-xs border border-slate-300 rounded flex-grow outline-none">
+                    <button onclick="applyCoupon()" class="bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded hover:bg-slate-700">Apply</button>
+                </div>
+                <div id="coupon-discount-row" class="hidden justify-between text-xs text-green-600 font-bold pt-1">
+                    <span>Discount (20% OFF)</span>
+                    <span id="coupon-discount-val">-₹100</span>
+                </div>
+                <div class="pt-2 border-t border-slate-200 flex justify-between text-base font-extrabold text-slate-900">
+                    <span>Total Amount Payable</span>
+                    <span id="checkout-total-price" class="text-brand-600">₹499</span>
+                </div>
+            </div>
+
+            <!-- Simulated Payment Gateway UI (Razorpay/UPI) -->
+            <div class="space-y-3 mb-6">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Select Payment Method</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" onclick="selectPayMethod('upi')" class="pay-method-btn border-2 border-brand-600 bg-brand-50/40 p-3 rounded-xl flex items-center space-x-2 text-xs font-bold text-slate-800">
+                        <i class="fa-solid fa-qrcode text-brand-600 text-base"></i>
+                        <span>UPI / GooglePay</span>
+                    </button>
+                    <button type="button" onclick="selectPayMethod('card')" class="pay-method-btn border border-slate-200 p-3 rounded-xl flex items-center space-x-2 text-xs font-bold text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-credit-card text-base"></i>
+                        <span>Card / NetBanking</span>
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="simulateSuccessfulPayment()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl text-sm shadow-lg shadow-emerald-600/30 transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-lock text-xs"></i>
+                <span id="pay-btn-label">Pay ₹499 & Unlock Instantly</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        // --- INITIAL DATABASE & STATE ---
+        const DEFAULT_TEST_SERIES = [
+            {
+                id: 'test-1',
+                title: 'GATE CSE 2027: Data Structures & Algorithms Grand Mock',
+                branch: 'CSE',
+                price: 499,
+                isFree: false,
+                durationMins: 30,
+                description: 'Covers Binary Trees, Sorting Algorithms, Time Complexities, and Graph Traversal.',
+                questions: [
+                    {
+                        id: 'q1',
+                        subject: 'Algorithms',
+                        text: 'What is the worst-case time complexity of QuickSort algorithm when selecting the last element as pivot?',
+                        marks: 2.0,
+                        negative: 0.66,
+                        options: ['\\(O(n \\log n)\\)', '\\(O(n^2)\\)', '\\(O(n)\\)', '\\(O(\\log n)\\)'],
+                        correctIndex: 1,
+                        solution: 'In the worst case (e.g. array already sorted), QuickSort leads to highly unbalanced partitions, giving the recurrence relation \\(T(n) = T(n-1) + O(n)\\) which resolves to \\(O(n^2)\\).'
+                    },
+                    {
+                        id: 'q2',
+                        subject: 'Data Structures',
+                        text: 'Consider a min-heap with 7 elements. What is the maximum number of comparisons required to insert a new element into this heap?',
+                        marks: 2.0,
+                        negative: 0.66,
+                        options: ['1', '3', '7', '4'],
+                        correctIndex: 1,
+                        solution: 'The height of a min-heap with 7 elements is \\(\\lfloor \\log_2 7 \\rfloor = 2\\). Inserting an 8th element puts it at depth 3, so at most 3 comparisons are needed up to the root.'
+                    },
+                    {
+                        id: 'q3',
+                        subject: 'Operating Systems',
+                        text: 'Which CPU scheduling algorithm can suffer from the "Convoy Effect"?',
+                        marks: 2.0,
+                        negative: 0.66,
+                        options: ['Round Robin', 'First-Come, First-Served (FCFS)', 'Shortest Job First (SJF)', 'Priority Scheduling'],
+                        correctIndex: 1,
+                        solution: 'The Convoy Effect occurs in FCFS when a long CPU-bound process blocks multiple short I/O-bound processes behind it.'
+                    }
+                ]
+            },
+            {
+                id: 'test-demo-cse',
+                title: 'CSE Free Demo Practice Test (GATE 2027)',
+                branch: 'CSE',
+                price: 0,
+                isFree: true,
+                durationMins: 15,
+                description: 'Open demo practice test for all registered engineering students.',
+                questions: [
+                    {
+                        id: 'qd1',
+                        subject: 'Computer Networks',
+                        text: 'What is the length of an IPv6 address in bits?',
+                        marks: 2.0,
+                        negative: 0.66,
+                        options: ['32 bits', '64 bits', '128 bits', '256 bits'],
+                        correctIndex: 2,
+                        solution: 'IPv6 uses 128-bit addresses, allowing for \\(2^{128}\\) unique network addresses.'
+                    }
+                ]
+            },
+            {
+                id: 'test-2',
+                title: 'GATE ECE 2027: Analog & Digital Circuits Mock',
+                branch: 'ECE',
+                price: 599,
+                isFree: false,
+                durationMins: 45,
+                description: 'Test your grasp on Op-Amps, Logic Gates, and Signal Processing basics.',
+                questions: [
+                    {
+                        id: 'q201',
+                        subject: 'Digital Circuits',
+                        text: 'How many 2-to-1 Multiplexers are required to implement a 4-to-1 Multiplexer?',
+                        marks: 2.0,
+                        negative: 0.66,
+                        options: ['2', '3', '4', '1'],
+                        correctIndex: 1,
+                        solution: 'You need 2 MUXes for the first stage and 1 MUX for the final output stage, totaling 3 MUXes.'
+                    }
+                ]
+            }
+        ];
+
+        // Global Dynamic State
+        let testSeriesList = JSON.parse(localStorage.getItem('edutest_series')) || DEFAULT_TEST_SERIES;
+        let currentUser = JSON.parse(localStorage.getItem('edutest_user')) || null;
+        let userPurchases = JSON.parse(localStorage.getItem('edutest_purchases')) || []; // array of test IDs
+        
+        let currentTest = null;
+        let activeQuestionIndex = 0;
+        let studentResponses = {};
+        let timerInterval = null;
+        let timeRemainingSeconds = 0;
+        let activeReviewFilter = 'ALL';
+        let pendingCheckoutSeries = null;
+        let appliedCouponDiscount = 0;
+
+        let subjectAccuracyChart = null;
+        let attemptSummaryChart = null;
+
+        // Save State Helpers
+        function persistData() {
+            localStorage.setItem('edutest_series', JSON.stringify(testSeriesList));
+            localStorage.setItem('edutest_purchases', JSON.stringify(userPurchases));
+            if (currentUser) {
+                localStorage.setItem('edutest_user', JSON.stringify(currentUser));
+            } else {
+                localStorage.removeItem('edutest_user');
+            }
+        }
+
+        // --- LIFECYCLE INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderHeaderAuth();
+            renderTestCatalog(testSeriesList);
+            populateAdminTestDropdown();
+        });
+
+        // --- AUTH & USER SYSTEM ---
+        function renderHeaderAuth() {
+            const container = document.getElementById('auth-header-container');
+            const adminNavBtn = document.getElementById('admin-nav-btn');
+
+            if (currentUser) {
+                if (currentUser.role === 'ADMIN') {
+                    adminNavBtn.classList.remove('hidden');
+                } else {
+                    adminNavBtn.classList.add('hidden');
+                }
+
+                container.innerHTML = `
+                    <div class="text-right hidden sm:block">
+                        <div class="text-sm font-bold text-slate-800">${currentUser.name}</div>
+                        <div class="text-xs text-slate-500">${currentUser.branch || 'B.Tech'} • ${currentUser.role}</div>
+                    </div>
+                    <div class="h-10 w-10 rounded-full ${currentUser.role === 'ADMIN' ? 'bg-purple-600' : 'bg-brand-600'} text-white font-bold flex items-center justify-center border-2 border-white shadow-sm">
+                        ${currentUser.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <button onclick="handleLogout()" class="text-slate-400 hover:text-red-600 text-sm ml-2 p-1" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                `;
+            } else {
+                adminNavBtn.classList.add('hidden');
+                container.innerHTML = `
+                    <button onclick="openAuthModal('login')" class="text-slate-700 hover:text-brand-600 text-sm font-bold px-3 py-2 rounded-lg transition">
+                        Log In
+                    </button>
+                    <button onclick="openAuthModal('register')" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-sm transition">
+                        Register
+                    </button>
+                `;
+            }
+        }
+
+        function openAuthModal(tab = 'login') {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            switchAuthTab(tab);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('form-login');
+            const regForm = document.getElementById('form-register');
+            const tabLogin = document.getElementById('auth-tab-login');
+            const tabReg = document.getElementById('auth-tab-register');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                tabLogin.className = 'flex-1 py-2 font-bold text-sm text-brand-600 border-b-2 border-brand-600';
+                tabReg.className = 'flex-1 py-2 font-bold text-sm text-slate-400 hover:text-slate-600';
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                tabReg.className = 'flex-1 py-2 font-bold text-sm text-brand-600 border-b-2 border-brand-600';
+                tabLogin.className = 'flex-1 py-2 font-bold text-sm text-slate-400 hover:text-slate-600';
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+
+            if (email === 'admin@edutest.com') {
+                currentUser = { name: 'Super Admin', email, role: 'ADMIN', branch: 'CSE' };
+            } else {
+                currentUser = { name: 'Rahul Sharma', email, role: 'STUDENT', branch: 'CSE' };
+            }
+
+            persistData();
+            renderHeaderAuth();
+            closeAuthModal();
+            renderTestCatalog(testSeriesList);
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const branch = document.getElementById('reg-branch').value;
+
+            currentUser = { name, email, role: 'STUDENT', branch };
+            persistData();
+            renderHeaderAuth();
+            closeAuthModal();
+            renderTestCatalog(testSeriesList);
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            persistData();
+            renderHeaderAuth();
+            renderTestCatalog(testSeriesList);
+            navigateTo('home');
+        }
+
+        // --- STORE & CHECKOUT ENGINE ---
+        function isTestPurchased(testId, isFree) {
+            if (isFree) return true;
+            if (currentUser && currentUser.role === 'ADMIN') return true;
+            return userPurchases.includes(testId);
+        }
+
+        function openCheckoutModal(testId) {
+            if (!currentUser) {
+                openAuthModal('login');
+                return;
+            }
+
+            pendingCheckoutSeries = testSeriesList.find(t => t.id === testId);
+            if (!pendingCheckoutSeries) return;
+
+            appliedCouponDiscount = 0;
+            document.getElementById('coupon-discount-row').classList.add('hidden');
+            document.getElementById('coupon-code-input').value = '';
+
+            document.getElementById('checkout-series-title').innerText = pendingCheckoutSeries.title;
+            document.getElementById('checkout-series-original-price').innerText = `₹${pendingCheckoutSeries.price}`;
+            document.getElementById('checkout-total-price').innerText = `₹${pendingCheckoutSeries.price}`;
+            document.getElementById('pay-btn-label').innerText = `Pay ₹${pendingCheckoutSeries.price} & Unlock Instantly`;
+
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById('coupon-code-input').value.trim().toUpperCase();
+            if (code === 'GATE2027' || code === 'BTECH20') {
+                appliedCouponDiscount = 0.20; // 20% off
+                const discountVal = Math.round(pendingCheckoutSeries.price * appliedCouponDiscount);
+                const finalPrice = pendingCheckoutSeries.price - discountVal;
+
+                document.getElementById('coupon-discount-val').innerText = `-₹${discountVal}`;
+                document.getElementById('coupon-discount-row').classList.remove('hidden');
+                document.getElementById('coupon-discount-row').classList.add('flex');
+                document.getElementById('checkout-total-price').innerText = `₹${finalPrice}`;
+                document.getElementById('pay-btn-label').innerText = `Pay ₹${finalPrice} & Unlock Instantly`;
+            } else {
+                alert('Invalid Coupon Code! Try GATE2027 for 20% off.');
+            }
+        }
+
+        function simulateSuccessfulPayment() {
+            if (!pendingCheckoutSeries) return;
+
+            // Add purchase record
+            if (!userPurchases.includes(pendingCheckoutSeries.id)) {
+                userPurchases.push(pendingCheckoutSeries.id);
+                persistData();
+            }
+
+            closeCheckoutModal();
+            renderTestCatalog(testSeriesList);
+            alert(`Payment Successful! You have unlocked "${pendingCheckoutSeries.title}". Click "Start Test Now" to begin.`);
+        }
+
+        // --- CATALOG UI RENDER ---
+        function renderTestCatalog(tests) {
+            const grid = document.getElementById('test-cards-grid');
+            if (tests.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-medium">No tests found for this branch category.</div>`;
+                return;
+            }
+
+            grid.innerHTML = tests.map(test => {
+                const purchased = isTestPurchased(test.id, test.isFree);
+
+                let badge = test.isFree 
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-1 rounded-md">FREE DEMO</span>`
+                    : purchased 
+                        ? `<span class="bg-purple-100 text-purple-800 text-xs font-extrabold px-2.5 py-1 rounded-md"><i class="fa-solid fa-circle-check mr-1"></i>UNLOCKED</span>`
+                        : `<span class="bg-amber-100 text-amber-900 text-xs font-extrabold px-2.5 py-1 rounded-md">₹${test.price}</span>`;
+
+                let actionBtn = purchased
+                    ? `<button onclick="startExam('${test.id}')" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-sm transition flex items-center justify-center space-x-2">
+                        <span>Start Test Now</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                       </button>`
+                    : `<button onclick="openCheckoutModal('${test.id}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-sm transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-lock text-xs"></i> <span>Unlock Series (₹${test.price})</span>
+                       </button>`;
+
+                return `
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded-md border border-brand-200">
+                                    ${test.branch}
+                                </span>
+                                ${badge}
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-2 leading-snug">${test.title}</h3>
+                            <p class="text-xs text-slate-500 mb-4 line-clamp-2">${test.description}</p>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-600 border-t border-slate-100 pt-3 mb-4">
+                                <span><i class="fa-regular fa-clock mr-1"></i> ${test.durationMins} Mins</span>
+                                <span>Questions: ${test.questions.length}</span>
+                            </div>
+                            ${actionBtn}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterBranch(branch) {
+            document.querySelectorAll('.branch-tag').forEach(btn => {
+                if (btn.innerText.includes(branch) || (branch === 'ALL' && btn.innerText.includes('All'))) {
+                    btn.className = 'branch-tag bg-brand-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-sm transition';
+                } else {
+                    btn.className = 'branch-tag bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-semibold transition';
+                }
+            });
+
+            if (branch === 'ALL') renderTestCatalog(testSeriesList);
+            else renderTestCatalog(testSeriesList.filter(t => t.branch === branch));
+        }
+
+        // --- NAVIGATION ---
+        function navigateTo(viewName) {
+            if (viewName === 'admin' && (!currentUser || currentUser.role !== 'ADMIN')) {
+                alert('Access Denied: Admin privileges required.');
+                return;
+            }
+
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+
+            const header = document.getElementById('main-header');
+            if (viewName === 'exam') header.classList.add('hidden');
+            else header.classList.remove('hidden');
+
+            if (viewName === 'dashboard' && currentTest) renderDashboardAnalytics();
+        }
+
+        // --- EXAM ENGINE ---
+        function startExam(testId) {
+            if (!currentUser) {
+                openAuthModal('login');
+                return;
+            }
+
+            currentTest = testSeriesList.find(t => t.id === testId);
+            if (!currentTest || !currentTest.questions.length) {
+                alert('This test currently has no questions added.');
+                return;
+            }
+
+            if (!isTestPurchased(currentTest.id, currentTest.isFree)) {
+                openCheckoutModal(currentTest.id);
+                return;
+            }
+
+            activeQuestionIndex = 0;
+            studentResponses = {};
+            currentTest.questions.forEach((_, idx) => {
+                studentResponses[idx] = { status: 'NOT_VISITED', selectedOption: null };
+            });
+
+            document.getElementById('exam-title').innerText = currentTest.title;
+            document.getElementById('exam-user-name').innerText = currentUser.name;
+            document.getElementById('exam-user-avatar').innerText = currentUser.name.substring(0, 2).toUpperCase();
+
+            timeRemainingSeconds = currentTest.durationMins * 60;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+
+            navigateTo('exam');
+            loadQuestion(0);
+        }
+
+        function updateTimer() {
+            if (timeRemainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                alert("Time Limit Reached! Auto-submitting exam.");
+                submitExam();
+                return;
+            }
+            timeRemainingSeconds--;
+            const mins = Math.floor(timeRemainingSeconds / 60);
+            const secs = timeRemainingSeconds % 60;
+            document.getElementById('exam-timer').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function loadQuestion(index) {
+            activeQuestionIndex = index;
+            const q = currentTest.questions[index];
+
+            if (studentResponses[index].status === 'NOT_VISITED') {
+                studentResponses[index].status = 'NOT_ANSWERED';
+            }
+
+            document.getElementById('exam-q-num').innerText = index + 1;
+            document.getElementById('exam-q-subject').innerText = q.subject || 'Core';
+            document.getElementById('exam-q-marks').innerText = `+${q.marks.toFixed(2)}`;
+            document.getElementById('exam-q-negative').innerText = `-${q.negative.toFixed(2)}`;
+            document.getElementById('exam-q-text').innerHTML = q.text;
+
+            const container = document.getElementById('exam-options-container');
+            const selectedOpt = studentResponses[index].selectedOption;
+
+            container.innerHTML = q.options.map((optText, optIdx) => `
+                <label onclick="selectOption(${optIdx})" class="flex items-center space-x-3 p-4 rounded-xl border ${selectedOpt === optIdx ? 'border-brand-600 bg-brand-50/50 text-brand-900 font-medium' : 'border-slate-200 hover:bg-slate-50 text-slate-700'} cursor-pointer transition">
+                    <input type="radio" name="exam-option" ${selectedOpt === optIdx ? 'checked' : ''} class="h-4 w-4 text-brand-600">
+                    <span class="text-sm">${optText}</span>
+                </label>
+            `).join('');
+
+            if (window.renderMathInElement) {
+                renderMathInElement(document.getElementById('exam-q-text'));
+                renderMathInElement(container);
+            }
+
+            renderQuestionPalette();
+        }
+
+        function selectOption(optIdx) {
+            studentResponses[activeQuestionIndex].selectedOption = optIdx;
+            loadQuestion(activeQuestionIndex);
+        }
+
+        function clearResponse() {
+            studentResponses[activeQuestionIndex].selectedOption = null;
+            if (studentResponses[activeQuestionIndex].status !== 'MARKED') {
+                studentResponses[activeQuestionIndex].status = 'NOT_ANSWERED';
+            }
+            loadQuestion(activeQuestionIndex);
+        }
+
+        function saveAndNext() {
+            if (studentResponses[activeQuestionIndex].selectedOption !== null) {
+                studentResponses[activeQuestionIndex].status = 'ANSWERED';
+            } else {
+                studentResponses[activeQuestionIndex].status = 'NOT_ANSWERED';
+            }
+
+            if (activeQuestionIndex < currentTest.questions.length - 1) {
+                loadQuestion(activeQuestionIndex + 1);
+            } else {
+                renderQuestionPalette();
+            }
+        }
+
+        function markForReview() {
+            if (studentResponses[activeQuestionIndex].selectedOption !== null) {
+                studentResponses[activeQuestionIndex].status = 'ANS_MARKED';
+            } else {
+                studentResponses[activeQuestionIndex].status = 'MARKED';
+            }
+
+            if (activeQuestionIndex < currentTest.questions.length - 1) {
+                loadQuestion(activeQuestionIndex + 1);
+            } else {
+                renderQuestionPalette();
+            }
+        }
+
+        function navigateQuestion(step) {
+            const nextIdx = activeQuestionIndex + step;
+            if (nextIdx >= 0 && nextIdx < currentTest.questions.length) {
+                loadQuestion(nextIdx);
+            }
+        }
+
+        function renderQuestionPalette() {
+            const grid = document.getElementById('question-palette-grid');
+            grid.innerHTML = currentTest.questions.map((_, idx) => {
+                const status = studentResponses[idx].status;
+                let statusClass = 'status-not-visited';
+
+                if (status === 'ANSWERED') statusClass = 'status-answered';
+                else if (status === 'NOT_ANSWERED') statusClass = 'status-not-answered';
+                else if (status === 'MARKED') statusClass = 'status-marked';
+                else if (status === 'ANS_MARKED') statusClass = 'status-ans-marked';
+
+                const isCurrent = idx === activeQuestionIndex ? 'ring-2 ring-slate-900 ring-offset-1 font-bold' : '';
+
+                return `
+                    <button onclick="loadQuestion(${idx})" class="h-9 w-9 rounded-lg text-xs flex items-center justify-center ${statusClass} ${isCurrent} transition">
+                        ${idx + 1}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function confirmSubmitTest() {
+            if (confirm("Submit your examination test session now?")) {
+                submitExam();
+            }
+        }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            navigateTo('dashboard');
+        }
+
+        // --- DASHBOARD & ANALYTICS ---
+        function renderDashboardAnalytics() {
+            let totalMarksObtained = 0;
+            let totalMaxMarks = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unattemptedCount = 0;
+            const subjectStats = {};
+
+            currentTest.questions.forEach((q, idx) => {
+                totalMaxMarks += q.marks;
+                const resp = studentResponses[idx];
+                const subj = q.subject || 'Core';
+
+                if (!subjectStats[subj]) subjectStats[subj] = { correct: 0, total: 0 };
+                subjectStats[subj].total++;
+
+                if (resp && resp.selectedOption !== null) {
+                    if (resp.selectedOption === q.correctIndex) {
+                        totalMarksObtained += q.marks;
+                        correctCount++;
+                        subjectStats[subj].correct++;
+                    } else {
+                        totalMarksObtained -= q.negative;
+                        incorrectCount++;
+                    }
+                } else {
+                    unattemptedCount++;
+                }
+            });
+
+            const totalAttempted = correctCount + incorrectCount;
+            const accuracyRate = totalAttempted > 0 ? ((correctCount / totalAttempted) * 100).toFixed(1) : 0;
+            const percentile = Math.min(99.9, Math.max(10, (75 + (totalMarksObtained / (totalMaxMarks || 1)) * 24.9))).toFixed(1);
+
+            document.getElementById('dash-score').innerText = `${totalMarksObtained.toFixed(1)} / ${totalMaxMarks}`;
+            document.getElementById('dash-percentile').innerText = `${percentile}%`;
+            document.getElementById('dash-rank').innerText = `#${Math.floor(250 - percentile * 2.2)}`;
+            document.getElementById('dash-accuracy').innerText = `${accuracyRate}%`;
+            document.getElementById('dash-correct-count').innerText = correctCount;
+            document.getElementById('dash-incorrect-count').innerText = incorrectCount;
+            document.getElementById('dash-attempt-rate').innerText = `${totalAttempted} / ${currentTest.questions.length}`;
+
+            renderCharts(subjectStats, correctCount, incorrectCount, unattemptedCount);
+            renderSolutionsList();
+        }
+
+        function renderCharts(subjectStats, correct, incorrect, unattempted) {
+            const ctx1 = document.getElementById('chart-subject-accuracy').getContext('2d');
+            if (subjectAccuracyChart) subjectAccuracyChart.destroy();
+
+            const subjects = Object.keys(subjectStats);
+            const accuracies = subjects.map(s => ((subjectStats[s].correct / subjectStats[s].total) * 100).toFixed(0));
+
+            subjectAccuracyChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: subjects,
+                    datasets: [{ label: 'Accuracy %', data: accuracies, backgroundColor: '#2563eb', borderRadius: 6 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } } }
+            });
+
+            const ctx2 = document.getElementById('chart-attempt-summary').getContext('2d');
+            if (attemptSummaryChart) attemptSummaryChart.destroy();
+
+            attemptSummaryChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct', 'Incorrect', 'Unattempted'],
+                    datasets: [{ data: [correct, incorrect, unattempted], backgroundColor: ['#22c55e', '#ef4444', '#cbd5e1'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function filterReview(type) {
+            activeReviewFilter = type;
+            document.querySelectorAll('.review-filter-btn').forEach(btn => {
+                if (btn.innerText.toUpperCase() === type) {
+                    btn.className = 'review-filter-btn px-3 py-1 rounded text-xs font-semibold bg-brand-600 text-white';
+                } else {
+                    btn.className = 'review-filter-btn px-3 py-1 rounded text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200';
+                }
+            });
+            renderSolutionsList();
+        }
+
+        function renderSolutionsList() {
+            const list = document.getElementById('solutions-list');
+            if (!currentTest) return;
+
+            let filteredQs = currentTest.questions.map((q, idx) => {
+                const resp = studentResponses[idx];
+                const isCorrect = resp && resp.selectedOption === q.correctIndex;
+                const isAttempted = resp && resp.selectedOption !== null;
+                return { ...q, idx, resp, isCorrect, isAttempted };
+            });
+
+            if (activeReviewFilter === 'CORRECT') {
+                filteredQs = filteredQs.filter(item => item.isAttempted && item.isCorrect);
+            } else if (activeReviewFilter === 'INCORRECT') {
+                filteredQs = filteredQs.filter(item => item.isAttempted && !item.isCorrect);
+            }
+
+            list.innerHTML = filteredQs.map(q => {
+                let statusBadge = '<span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded font-bold">Unattempted</span>';
+                if (q.isAttempted) {
+                    statusBadge = q.isCorrect 
+                        ? '<span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded font-bold"><i class="fa-solid fa-check mr-1"></i> Correct</span>'
+                        : '<span class="bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded font-bold"><i class="fa-solid fa-xmark mr-1"></i> Incorrect</span>';
+                }
+
+                return `
+                    <div class="p-6 hover:bg-slate-50 transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-xs font-bold text-slate-400">Q${q.idx + 1}. ${q.subject}</span>
+                            ${statusBadge}
+                        </div>
+                        <h4 class="text-sm font-semibold text-slate-800 mb-4">${q.text}</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4 text-xs">
+                            ${q.options.map((opt, oIdx) => {
+                                let style = 'border-slate-200 bg-white';
+                                if (oIdx === q.correctIndex) style = 'border-green-500 bg-green-50 text-green-900 font-bold';
+                                else if (q.resp && q.resp.selectedOption === oIdx && !q.isCorrect) style = 'border-red-500 bg-red-50 text-red-900 font-bold';
+                                return `<div class="p-2.5 rounded border ${style}">Option ${String.fromCharCode(65+oIdx)}: ${opt}</div>`;
+                            }).join('')}
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs">
+                            <strong class="text-slate-900 font-bold block mb-1">Solution Explanation:</strong>
+                            <p class="text-slate-600 leading-relaxed">${q.solution}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (window.renderMathInElement) renderMathInElement(list);
+        }
+
+        // --- ADMIN MODULE ---
+        function populateAdminTestDropdown() {
+            const select = document.getElementById('admin-target-test-id');
+            select.innerHTML = testSeriesList.map(t => `<option value="${t.id}">${t.title} (${t.branch})</option>`).join('');
+        }
+
+        function handleCreateTest(e) {
+            e.preventDefault();
+            const title = document.getElementById('admin-test-title').value;
+            const branch = document.getElementById('admin-test-branch').value;
+            const price = parseFloat(document.getElementById('admin-test-price').value);
+            const isFree = document.getElementById('admin-test-is-free').checked;
+            const durationMins = parseInt(document.getElementById('admin-test-duration').value);
+            const description = document.getElementById('admin-test-desc').value;
+
+            const newTest = {
+                id: 'test-' + Date.now(),
+                title,
+                branch,
+                price: isFree ? 0 : price,
+                isFree,
+                durationMins,
+                description,
+                questions: []
+            };
+
+            testSeriesList.push(newTest);
+            persistData();
+            populateAdminTestDropdown();
+            renderTestCatalog(testSeriesList);
+
+            alert('New test series pack successfully published!');
+            document.getElementById('form-create-test').reset();
+        }
+
+        function handleAddQuestion(e) {
+            e.preventDefault();
+            const targetTestId = document.getElementById('admin-target-test-id').value;
+            const test = testSeriesList.find(t => t.id === targetTestId);
+
+            if (!test) return;
+
+            const selectedCorrectRadio = document.querySelector('input[name="correct-option"]:checked');
+
+            const question = {
+                id: 'q-' + Date.now(),
+                subject: document.getElementById('admin-q-subject').value,
+                text: document.getElementById('admin-q-text').value,
+                marks: parseFloat(document.getElementById('admin-q-marks').value),
+                negative: parseFloat(document.getElementById('admin-q-negative').value),
+                options: [
+                    document.getElementById('opt-0').value,
+                    document.getElementById('opt-1').value,
+                    document.getElementById('opt-2').value,
+                    document.getElementById('opt-3').value
+                ],
+                correctIndex: parseInt(selectedCorrectRadio.value),
+                solution: document.getElementById('admin-q-solution').value
+            };
+
+            test.questions.push(question);
+            persistData();
+            renderTestCatalog(testSeriesList);
+
+            alert('Question added successfully!');
+            document.getElementById('form-add-question').reset();
+        }
+    </script>
+</body>
+</html>
+```
